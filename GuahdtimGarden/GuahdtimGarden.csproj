@@ -59,9 +59,9 @@
       <Project>{3939AEC5-DAC2-4E71-9D1B-27D16EA9B8B5}</Project>
       <Name>Ntp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RelayController\RelayController.csproj">
-      <Project>{FAD3D239-FD96-4BF4-B6AC-29FAABCB39FF}</Project>
-      <Name>RelayController</Name>
+    <ProjectReference Include="..\Relays\Relays.csproj">
+      <Project>{A76EA4D0-C16D-43BF-8EE9-2474E6DB89CC}</Project>
+      <Name>Relays</Name>
     </ProjectReference>
     <ProjectReference Include="..\SDCard\SDCard.csproj">
       <Project>{C6E32087-3E09-403C-975E-722415552870}</Project>

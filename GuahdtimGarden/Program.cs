@@ -22,18 +22,46 @@ namespace GuahdtimGarden
 		private static SensirionSHT11 _tempAndHumiditySensor;
 		private static HttpDataDeliveryController _httpDataDeliverer;
 
+		private static  Relays.RelayController _relays;
+		private static WaterLevel.WaterLevelSensor _waterLevelSensorController;
+
 		public static void Main()
 		{
 			SetupTime();
 			SetupMicroSdDrive();
 			SetupHumidityAndTemperatureSensor();
 			SetupInternetDataSending();
+			SetupWaterLevelSensors();
+			SetupRelays();
+
 
 			StartControllerLoop();
 
 		}
 
-		
+		private static void SetupWaterLevelSensors()
+		{
+			Debug.Print("Setting up water level sensors");
+			/*
+				Should work as follows:
+				Give a dataobject back telling what the water levels are in the 2 pools
+				Pool1 (growpod) - Empty and filled
+				Pool2 (reservoir) - Empty
+			*/
+			_waterLevelSensorController = new WaterLevel.WaterLevelSensor();
+		}
+
+		private static void SetupRelays()
+		{
+			Debug.Print("Setting up relays");
+			_relays=new Relays.RelayController();
+			/* Function: An object with 2-3 methods
+			*		Heat-relay on
+			*		Heat-relay off
+			*
+			*		Pump-relay on for x number of milliseconds
+			*/
+		}
 
 		private static void SetupTime()
 		{
@@ -70,7 +98,9 @@ namespace GuahdtimGarden
 			{
 				var humidity = GetHumidity();
 				var temperature = GetTemperature();
-				var dataPackage = CreateNewDataPackage(humidity, temperature);
+				var waterLevelData = _waterLevelSensorController.GetWaterLevelStatus();
+				var heaterStatus = _relays.GetHeaterStatus();
+				var dataPackage = CreateNewDataPackage(humidity, temperature, waterLevelData, heaterStatus);
 				_sdCardController.DoDataWrite(dataPackage);
 				_httpDataDeliverer.SendDataToWeb(dataPackage);
 				SleepForGivenSeconds(30);
@@ -100,7 +130,7 @@ namespace GuahdtimGarden
 			return temperature;
 		}
 
-		private static IGuadtimGardenData CreateNewDataPackage(double humidity, double temperature)
+		private static IGuadtimGardenData CreateNewDataPackage(double humidity, double temperature, WaterLevel.WaterLevelData waterLevelData, bool heaterStatus, bool pumpStatus=false)
 		{
 			return new SDCard.GuadtimGardenData(true, DateTime.Now,temperature,humidity, false);
 		}
