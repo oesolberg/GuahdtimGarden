@@ -8,9 +8,11 @@ using ElzeKool.io.sht11_io;
 using Http;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
+using Relays;
 using SDCard;
 using SecretLabs.NETMF.Hardware;
 using SecretLabs.NETMF.Hardware.Netduino;
+using WaterLevel;
 
 namespace GuahdtimGarden
 {
@@ -103,11 +105,59 @@ namespace GuahdtimGarden
 				var dataPackage = CreateNewDataPackage(humidity, temperature, waterLevelData, heaterStatus);
 				_sdCardController.DoDataWrite(dataPackage);
 				_httpDataDeliverer.SendDataToWeb(dataPackage);
+
+				DoLogicBasedOnTemperature(temperature);
+
+				DoLogicBasedOnWaterLevels(waterLevelData);
+
+				DoLogicBasedOnHumidity(humidity);
+
+
+
 				SleepForGivenSeconds(30);
 				numberOfRuns--;
 			} while (numberOfRuns>0);
 			
 			
+		}
+
+		private static void DoLogicBasedOnTemperature(double temperature)
+		{
+			if (temperature > 25)
+			{
+				_relays.Heater(HeaterStatus.Off);
+			}
+			if (temperature < 18)
+			{
+				_relays.Heater(HeaterStatus.On);
+			}
+
+			//Send some message with chosen action to webserver?
+		}
+
+		private static void DoLogicBasedOnWaterLevels(WaterLevelData waterLevelData)
+		{
+			if (!waterLevelData.ReservoirEmpty)
+			{
+				if (waterLevelData.GrowPoolEmpty)
+				{
+					while (!waterLevelData.ReservoirEmpty && !waterLevelData.GrowPoolFull)
+					{
+						_relays.RunPump(1000);
+						//Send some message about pumping for a second?
+					}
+					
+				}
+			}
+			else
+			{
+				//Send some message about the reservoir being empty
+			}
+		}
+
+		private static void DoLogicBasedOnHumidity(double humidity)
+		{
+			//At some later time create a web method to post help for water if it is really dry!
 		}
 
 		private static void SleepForGivenSeconds(int numberOfSeconds)
