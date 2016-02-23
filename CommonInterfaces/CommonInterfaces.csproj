@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Http</AssemblyName>
+    <AssemblyName>CommonInterfaces</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Http</RootNamespace>
+    <RootNamespace>CommonInterfaces</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{03FE2DDD-B9B7-4EDE-BE58-136548CF296A}</ProjectGuid>
+    <ProjectGuid>{542C87D6-40EB-4CE0-83B0-CCFBF72B3861}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
     <TargetFrameworkProfile />
@@ -30,21 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IGuadtimGardenData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Class1.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SPOT.Native" />
-    <Reference Include="Microsoft.SPOT.Net" />
-    <Reference Include="System" />
-    <Reference Include="System.Http" />
-    <Reference Include="System.IO" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommonInterfaces\CommonInterfaces.csproj">
-      <Project>{542C87D6-40EB-4CE0-83B0-CCFBF72B3861}</Project>
-      <Name>CommonInterfaces</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

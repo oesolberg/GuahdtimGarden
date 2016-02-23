@@ -1,4 +1,5 @@
 using System;
+using CommonInterfaces;
 using Microsoft.SPOT;
 
 namespace SDCard

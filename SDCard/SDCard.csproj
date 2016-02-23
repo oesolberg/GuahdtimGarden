@@ -31,7 +31,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="SdCardController.cs" />
-    <Compile Include="IGuadtimGardenData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GuadtimGardenData.cs" />
   </ItemGroup>
@@ -45,6 +44,12 @@
     </Reference>
     <Reference Include="SecretLabs.NETMF.Hardware.Netduino, Version=4.3.1.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System.IO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonInterfaces\CommonInterfaces.csproj">
+      <Project>{542C87D6-40EB-4CE0-83B0-CCFBF72B3861}</Project>
+      <Name>CommonInterfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

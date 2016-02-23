@@ -19,6 +19,16 @@ using Microsoft.SPOT;
 
 using ElzeKool.io.sht11_io;
 
+
+/*
+* Connections of SHT10
+* Yellow - Clock
+* Blue - Data
+* Green - Ground
+* Orange/Red - VCC
+*
+*/
+
 namespace ElzeKool.io
 {
 	public class SensirionSHT11

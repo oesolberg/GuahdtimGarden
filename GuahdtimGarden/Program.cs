@@ -2,8 +2,10 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using CommonInterfaces;
 using ElzeKool.io;
 using ElzeKool.io.sht11_io;
+using Http;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using SDCard;
@@ -18,12 +20,15 @@ namespace GuahdtimGarden
 
 		private static SDCard.SdCardController _sdCardController;
 		private static SensirionSHT11 _tempAndHumiditySensor;
+		private static HttpDataDeliveryController _httpDataDeliverer;
 
 		public static void Main()
 		{
 			SetupTime();
 			SetupMicroSdDrive();
 			SetupHumidityAndTemperatureSensor();
+			SetupInternetDataSending();
+
 			StartControllerLoop();
 
 		}
@@ -32,7 +37,7 @@ namespace GuahdtimGarden
 
 		private static void SetupTime()
 		{
-			var result=Ntp.Ntp.UpdateTimeFromNtpServer(numberOfRetries: 5);
+			var result=Ntp.Ntp.UpdateTimeFromNtpServer(numberOfRetries: 10);
 			Debug.Print("Timeupdate result: "+ result.ToString());
 			Debug.Print("DateTime after update: "+DateTime.Now.ToString(DateTimeFormatString));
 		}
@@ -53,6 +58,11 @@ namespace GuahdtimGarden
 			_tempAndHumiditySensor.SetSensorToAccurate();
 		}
 
+		private static void SetupInternetDataSending()
+		{
+			_httpDataDeliverer = new Http.HttpDataDeliveryController();
+		}
+
 		private static void StartControllerLoop()
 		{
 			var numberOfRuns = 2000000;
@@ -62,11 +72,17 @@ namespace GuahdtimGarden
 				var temperature = GetTemperature();
 				var dataPackage = CreateNewDataPackage(humidity, temperature);
 				_sdCardController.DoDataWrite(dataPackage);
-				Thread.Sleep(10000);
+				_httpDataDeliverer.SendDataToWeb(dataPackage);
+				SleepForGivenSeconds(30);
 				numberOfRuns--;
 			} while (numberOfRuns>0);
 			
 			
+		}
+
+		private static void SleepForGivenSeconds(int numberOfSeconds)
+		{
+			Thread.Sleep(numberOfSeconds*1000);
 		}
 
 		private static double GetHumidity()

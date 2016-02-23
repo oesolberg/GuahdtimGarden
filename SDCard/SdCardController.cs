@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using CommonInterfaces;
 using Microsoft.SPOT;
 using Microsoft.SPOT.IO;
 using Microsoft.SPOT.Hardware;
@@ -116,10 +117,10 @@ namespace SDCard
 
 		void SignalWrittenFile()
 		{
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 2; i++)
 			{
 				_confirm.Write(true);
-				Thread.Sleep(100);
+				Thread.Sleep(50);
 				_confirm.Write(false);
 				Thread.Sleep(50);
 			}

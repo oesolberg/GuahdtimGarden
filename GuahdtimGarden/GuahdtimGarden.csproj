@@ -47,6 +47,14 @@
     <Reference Include="GoBus" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonInterfaces\CommonInterfaces.csproj">
+      <Project>{542C87D6-40EB-4CE0-83B0-CCFBF72B3861}</Project>
+      <Name>CommonInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Http\Http.csproj">
+      <Project>{03FE2DDD-B9B7-4EDE-BE58-136548CF296A}</Project>
+      <Name>Http</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ntp\Ntp.csproj">
       <Project>{3939AEC5-DAC2-4E71-9D1B-27D16EA9B8B5}</Project>
       <Name>Ntp</Name>
