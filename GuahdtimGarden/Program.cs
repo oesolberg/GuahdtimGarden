@@ -18,6 +18,11 @@ namespace GuahdtimGarden
 {
 	public class Program
 	{
+
+		private const string WebApiUrlKeiy = "WebApiUrl";
+		private const string TokenKey = "GuahtdimBearerToken";
+
+
 		private const string DateTimeFormatString = "yyyy-MM-dd HH:mm:ss";
 
 		private static SDCard.SdCardController _sdCardController;
@@ -90,7 +95,23 @@ namespace GuahdtimGarden
 
 		private static void SetupInternetDataSending()
 		{
-			_httpDataDeliverer = new Http.HttpDataDeliveryController();
+			var webApiUrl=GetWebApiUrlFromConfig();
+			var headerInfo=GetWebApiHeaderInfo();
+				  
+			_httpDataDeliverer = new Http.HttpDataDeliveryController(webApiUrl,headerInfo);
+		}
+
+		private static string GetWebApiUrlFromConfig()
+		{
+
+			var webUrl=ConfigReader.ConfigurationManager.GetAppSetting(WebApiUrlKeiy);
+			return webUrl;
+		}
+
+		private static string GetWebApiHeaderInfo()
+		{
+			var token = ConfigReader.ConfigurationManager.GetAppSetting(TokenKey);
+			return token;
 		}
 
 		private static void StartControllerLoop()
@@ -100,10 +121,18 @@ namespace GuahdtimGarden
 			{
 				var humidity = GetHumidity();
 				var temperature = GetTemperature();
+				
+
 				var waterLevelData = _waterLevelSensorController.GetWaterLevelStatus();
+				
+
 				var heaterStatus = _relays.GetHeaterStatus();
+				
+
 				var dataPackage = CreateNewDataPackage(humidity, temperature, waterLevelData, heaterStatus);
+
 				_sdCardController.DoDataWrite(dataPackage);
+
 				_httpDataDeliverer.SendDataToWeb(dataPackage);
 
 				DoLogicBasedOnTemperature(temperature);
@@ -126,10 +155,13 @@ namespace GuahdtimGarden
 			if (temperature > 25)
 			{
 				_relays.Heater(HeaterStatus.Off);
+				_httpDataDeliverer.SendHeaterData( new GuadtimGardenData().AddHeaterOff());
+				
 			}
 			if (temperature < 18)
 			{
 				_relays.Heater(HeaterStatus.On);
+				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOn());
 			}
 
 			//Send some message with chosen action to webserver?
@@ -143,8 +175,11 @@ namespace GuahdtimGarden
 				{
 					while (!waterLevelData.ReservoirEmpty && !waterLevelData.GrowPoolFull)
 					{
+						_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOn());
 						_relays.RunPump(1000);
 						//Send some message about pumping for a second?
+						_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOff());
+
 					}
 					
 				}
@@ -152,6 +187,7 @@ namespace GuahdtimGarden
 			else
 			{
 				//Send some message about the reservoir being empty
+				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().ReservoirEmpty());
 			}
 		}
 
@@ -182,7 +218,7 @@ namespace GuahdtimGarden
 
 		private static IGuadtimGardenData CreateNewDataPackage(double humidity, double temperature, WaterLevel.WaterLevelData waterLevelData, bool heaterStatus, bool pumpStatus=false)
 		{
-			return new SDCard.GuadtimGardenData(true, DateTime.Now,temperature,humidity, false);
+			return new SDCard.GuadtimGardenData(pumpStatus, DateTime.Now,temperature,humidity, heaterStatus,waterLevelData.ReservoirEmpty,waterLevelData.GrowPoolEmpty,waterLevelData.GrowPoolFull);
 		}
 
 	

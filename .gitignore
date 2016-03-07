@@ -50,3 +50,5 @@ LubBackend/LubBackend/node_modules/
 #NuGet
 packages/
 *.nupkg
+*.secrets.config
+*.secret.config

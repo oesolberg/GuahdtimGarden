@@ -32,6 +32,7 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="GardenDataExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
@@ -50,6 +51,10 @@
     <ProjectReference Include="..\CommonInterfaces\CommonInterfaces.csproj">
       <Project>{542C87D6-40EB-4CE0-83B0-CCFBF72B3861}</Project>
       <Name>CommonInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConfigReader\ConfigReader.csproj">
+      <Project>{30005E3F-7331-4192-B1AA-3B002B7803B0}</Project>
+      <Name>ConfigReader</Name>
     </ProjectReference>
     <ProjectReference Include="..\Http\Http.csproj">
       <Project>{03FE2DDD-B9B7-4EDE-BE58-136548CF296A}</Project>
@@ -75,5 +80,8 @@
       <Project>{F0117A8D-0011-44F3-A72B-4382EF833A07}</Project>
       <Name>WaterLevel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AppSettings.secret.config" />
   </ItemGroup>
 </Project>

@@ -10,171 +10,152 @@ namespace Http
 {
 	public class HttpDataDeliveryController
 	{
+		private readonly string _webapiUrl;
+		private readonly string _headerToken;
+		private HttpSender _httpSender;
+
+		//public HttpDataDeliveryController()
+		//{
+		//	_httpSender=new HttpSender();
+		//}
+
+		public HttpDataDeliveryController(string webapiUrl, string headerToken)
+		{
+			_webapiUrl = webapiUrl;
+			_headerToken = headerToken;
+			_httpSender = new HttpSender(webapiUrl, headerToken);
+		}
+
 		public void SendDataToWeb(IGuadtimGardenData dataPackage)
-		{
-			//var request = WebRequest.Create("http://http://requestb.in/1agwmmz1");
-			//request.Method = "GET";
-			//try
-			//{
-			//	var response= request.GetResponse();
-			//	Stream respStream = response.GetResponseStream();
-			//	Debug.Print(respStream.ToString());
-			//}
-			//catch (Exception ex)
-			//{
-			//	Debug.Print(ex.Message);
-			//	throw;
-			//}
-
-			NetworkInterface networkInterface = NetworkInterface.GetAllNetworkInterfaces()[0];
-
-			if (networkInterface.IsDhcpEnabled)
-			{
-				Debug.Print(" Waiting for IP address ");
-
-				while (NetworkInterface.GetAllNetworkInterfaces()[0].IPAddress == IPAddress.Any.ToString()) ;
-			}
-
-			// Display network config for debugging
-			Debug.Print("Network configuration");
-			Debug.Print(" Network interface type: " + networkInterface.NetworkInterfaceType.ToString());
-			//Debug.Print(" MAC Address: " + BytesToHexString(networkInterface.PhysicalAddress));
-			Debug.Print(" DHCP enabled: " + networkInterface.IsDhcpEnabled.ToString());
-			Debug.Print(" Dynamic DNS enabled: " + networkInterface.IsDynamicDnsEnabled.ToString());
-			Debug.Print(" IP Address: " + networkInterface.IPAddress.ToString());
-			Debug.Print(" Subnet Mask: " + networkInterface.SubnetMask.ToString());
-			Debug.Print(" Gateway: " + networkInterface.GatewayAddress.ToString());
-
-			foreach (string dnsAddress in networkInterface.DnsAddresses)
-			{
-				Debug.Print(" DNS Server: " + dnsAddress.ToString());
-			}
-
-			//deviceId = BytesToHexString(networkInterface.PhysicalAddress);
-			AnotherTest(dataPackage);
-		}
-		
-//		private void ThePreferredAproach(){
-//			using (var client = new HttpClient())
-//{
-//    var values = new Dictionary<string, string>
-//    {
-//       { "thing1", "hello" },
-//       { "thing2", "world" }
-//    };
-
-//    var content = new FormUrlEncodedContent(values);
-
-//    var response = await client.PostAsync("http://www.example.com/recepticle.aspx", content);
-
-//    var responseString = await response.Content.ReadAsStringAsync();
-//}
-
-
-//using (var client = new HttpClient())
-//{
-//    var responseString = client.GetStringAsync("http://www.example.com/recepticle.aspx");
-//}
-
-//		}
-		
-//		private void AnotherTest()
-//		{
-//			var request = (HttpWebRequest)WebRequest.Create("http://www.example.com/recepticle.aspx");
-
-//var postData = "thing1=hello";
-//    postData += "&thing2=world";
-//var data = Encoding.ASCII.GetBytes(postData);
-
-//request.Method = "POST";
-//request.ContentType = "application/x-www-form-urlencoded";
-//request.ContentLength = data.Length;
-
-//using (var stream = request.GetRequestStream())
-//{
-//    stream.Write(data, 0, data.Length);
-//}
-
-//var response = (HttpWebResponse)request.GetResponse();
-
-//var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-//GET
-
-//var request = (HttpWebRequest)WebRequest.Create("http://www.example.com/recepticle.aspx");
-
-//var response = (HttpWebResponse)request.GetResponse();
-
-//var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-//		}
-		private void AnotherTest(IGuadtimGardenData dataPackage)
-		{
-			HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(@"http://requestb.in/1agwmmz1");
-
-			var dataString = CreateDataString(dataPackage);
-
-			UTF8Encoding enc = new UTF8Encoding();
-			byte[] data = UTF8Encoding.UTF8.GetBytes(dataString);
-
-
-
-			webReq.Method = "POST";
-			webReq.ContentType = "application/json";
-			webReq.ContentLength = data.Length;
-			webReq.Timeout = 10000;
-			Stream dataStream = null;
-			WebResponse response = null;
-			try
-			{
-				dataStream = webReq.GetRequestStream();
-
-				dataStream.Write(data, 0, data.Length);
-				dataStream.Close();
-
-				response = webReq.GetResponse();
-
-				//HttpWebResponse resp = (HttpWebResponse)webReq.GetResponse();
-
-				Debug.Print(((HttpWebResponse) response).StatusDescription);
-
-			}
-			catch (Exception ex)
-			{
-
-				Debug.Print(ex.Message);
-
-			}
-			finally
-			{
-				if (response != null)
-					response.Close();
-				if (dataStream != null)
-					dataStream.Close();
-			}
-
-			//Stream respData = response.GetResponseStream();
-			//StreamReader reader = new StreamReader(dataStream);
-
-			//string responseFromServer = reader.ReadToEnd();
-			//// Display the content.
-			//Debug.Print(responseFromServer);
-			//// Clean up the streams.
-			//reader.Close();
-			//dataStream.Close();
-			//response.Close();
+		{//deviceId = BytesToHexString(networkInterface.PhysicalAddress);
+			SendHeaterData(dataPackage);
+			SendTempAndHumidityData(dataPackage);
+			SendWaterlevelsData(dataPackage);
 		}
 
-		private string CreateDataString(IGuadtimGardenData dataPackage)
+		public void SendPumpData(IGuadtimGardenData dataPackage)
 		{
-			var dataString = "timeFromNetduino=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
-			var humidity = dataPackage.Humidity;
-			dataString += "&humidity=" + humidity.ToString("f");
-			dataString += "&temperature=" + dataPackage.Temperature.ToString("f");
-			dataString += "&IsWarming=" + dataPackage.IsWarming.ToString();
-			dataString += "&IsWatering=" + dataPackage.IsWatering.ToString();
+			var dataString = CreatePumpDataString(dataPackage);
 			
+			_httpSender.DoInitializeAndSend(dataString);
+
+		}
+
+		private string CreatePumpDataString(IGuadtimGardenData dataPackage)
+		{
+			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+			dataString += "&PumpOn=" + dataPackage.PumpOn;
 			return dataString;
 		}
+
+		public void SendHeaterData(IGuadtimGardenData dataPackage)
+		{
+			var dataString = CreateHeaterDataString(dataPackage);
+			_httpSender.DoInitializeAndSend(dataString);
+		}
+
+		private string CreateHeaterDataString(IGuadtimGardenData dataPackage)
+		{
+			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+			dataString += "&HeaterOn=" + dataPackage.HeaterOn;
+			return dataString;
+		}
+		//private string CreateDataString(IGuadtimGardenData dataPackage)
+		//{
+		//	var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+		//	var humidity = dataPackage.Humidity;
+		//	dataString += "&humidity=" + humidity.ToString("f");
+		//	dataString += "&temperature=" + dataPackage.Temperature.ToString("f");
+		//	dataString += "&IsWarming=" + dataPackage.HeaterOn.ToString();
+		//	dataString += "&IsWatering=" + dataPackage.PumpOn.ToString();
+
+		//	return dataString;
+		//}
+
+		public void SendWaterlevelsData(IGuadtimGardenData dataPackage)
+		{
+			var dataString = CreateWaterlevelsDataString(dataPackage);
+			_httpSender.DoInitializeAndSend(dataString);
+		}
+
+		private string CreateWaterlevelsDataString(IGuadtimGardenData dataPackage)
+		{
+			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+			dataString += "&ReservoirEmpty=" + dataPackage.ReservoirEmpty;
+			dataString += "&GrowPodEmpty=" + dataPackage.GrowPodEmpty;
+			dataString += "&GrowPodFull=" + dataPackage.GrowPodFull;
+			return dataString;
+		}
+
+		public void SendTempAndHumidityData(IGuadtimGardenData dataPackage)
+		{
+			var dataString = CreateHumidityDataString(dataPackage);
+			_httpSender.DoInitializeAndSend(dataString);
+		}
+
+		private string CreateHumidityDataString(IGuadtimGardenData dataPackage)
+		{
+			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+			dataString += "&Humidity=" + dataPackage.Humidity.ToString("f");
+			dataString += "&Temperature=" + dataPackage.Temperature.ToString("f");
+			return dataString;
+		}
+
+		//		private void ThePreferredAproach(){
+		//			using (var client = new HttpClient())
+		//{
+		//    var values = new Dictionary<string, string>
+		//    {
+		//       { "thing1", "hello" },
+		//       { "thing2", "world" }
+		//    };
+
+		//    var content = new FormUrlEncodedContent(values);
+
+		//    var response = await client.PostAsync("http://www.example.com/recepticle.aspx", content);
+
+		//    var responseString = await response.Content.ReadAsStringAsync();
+		//}
+
+
+		//using (var client = new HttpClient())
+		//{
+		//    var responseString = client.GetStringAsync("http://www.example.com/recepticle.aspx");
+		//}
+
+		//		}
+
+		//		private void AnotherTest()
+		//		{
+		//			var request = (HttpWebRequest)WebRequest.Create("http://www.example.com/recepticle.aspx");
+
+		//var postData = "thing1=hello";
+		//    postData += "&thing2=world";
+		//var data = Encoding.ASCII.GetBytes(postData);
+
+		//request.Method = "POST";
+		//request.ContentType = "application/x-www-form-urlencoded";
+		//request.ContentLength = data.Length;
+
+		//using (var stream = request.GetRequestStream())
+		//{
+		//    stream.Write(data, 0, data.Length);
+		//}
+
+		//var response = (HttpWebResponse)request.GetResponse();
+
+		//var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+		//GET
+
+		//var request = (HttpWebRequest)WebRequest.Create("http://www.example.com/recepticle.aspx");
+
+		//var response = (HttpWebResponse)request.GetResponse();
+
+		//var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+		//		}
+		
+		
 
 		private void DudeTest()
 		{
