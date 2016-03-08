@@ -116,7 +116,7 @@ namespace GuahdtimGarden
 
 		private static void StartControllerLoop()
 		{
-			var numberOfRuns = 2000000;
+			//var numberOfRuns = 2000000;
 			do
 			{
 				var humidity = GetHumidity();
@@ -144,10 +144,11 @@ namespace GuahdtimGarden
 
 
 				SleepForGivenSeconds(30);
-				numberOfRuns--;
-			} while (numberOfRuns>0);
-			
-			
+				//numberOfRuns--;
+			} while (true);
+			//}while(numberOfRuns>0);
+
+
 		}
 
 		private static void DoLogicBasedOnTemperature(double temperature)
