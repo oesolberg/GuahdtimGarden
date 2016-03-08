@@ -1,0 +1,42 @@
+PCB growpod
+
+Inputs=
+-- Waterlevels --
+A5=Reservoir
+A4=GrowPodEmpty
+A3=GrowPodFull
+
+-- Relay --
+D9=HeaterRelay
+D8=PumpRelay
+
+D0=Data
+D1=Clock
+
+5v
+Gnd
+
+
+
+
+Outputs from PCB
+-- Waterlevels --
+Reservoir
+GrowPodEmpty
+GrowPodFull
+Gnd GrowpodS
+Gnd reservoir
+
+-- Relay --
+HeaterRelay
+PumpRelay
+5v
+Gnd
+
+-- SHT10 --
+Data
+Clock
+5v
+Gnd
+
+
