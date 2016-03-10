@@ -28,8 +28,8 @@ namespace WaterLevel
 			_growpoolSensorEmpty = new AnalogInput(growPoolEmptyChannel);
 			_growpoolSensorFull = new AnalogInput(growPoolFullChannel);
 		}
-		
-		// Read the waterlevel and return a WaterLevelDataStruct
+
+		//Read the waterlevel and return a WaterLevelDataStruct
 		public WaterLevelData GetWaterLevelStatus()
 		{
 			var reservoirValue = _reservoirSensorEmpty.Read();
@@ -37,6 +37,7 @@ namespace WaterLevel
 			var growpoolSensorFullValue = _growpoolSensorFull.Read();
 
 			var waterLevelData = CreateWaterLevelData(reservoirValue, growpoolSensorEmptyValue, growpoolSensorFullValue);
+			//var waterLevelData = new WaterLevelData(1, 1, 1);
 			return waterLevelData;
 		}
 
@@ -46,37 +47,60 @@ namespace WaterLevel
 		}
 	}
 
-	public struct WaterLevelData
+	public class WaterLevelData
 	{
+		private bool _growPoolEmpty;
+		private bool _growPoolFull;
+		private bool _reservoirEmpty;
+
+		public WaterLevelData()
+		{
+			
+		}
 		public WaterLevelData(double reservoirValue, double growpoolSensorEmptyValue, double growpoolSensorFullValue)
 		{
 			if (reservoirValue < 0.1)
-				ReservoirEmpty = true;
+				_reservoirEmpty = true;
 			else
 			{
-				ReservoirEmpty = false;
+				_reservoirEmpty = false;
 			}
 
-			if (growpoolSensorEmptyValue<0.1)
+			if (growpoolSensorEmptyValue < 0.1)
 			{
-				GrowPoolEmpty = true;
+				_growPoolEmpty = true;
 			}
 			else
 			{
-				GrowPoolEmpty = false;
+				_growPoolEmpty = false;
 			}
 
 			if (growpoolSensorFullValue < 0.1)
 			{
-				GrowPoolFull = false;
+				_growPoolFull = false;
 			}
 			else
 			{
-				GrowPoolFull = true;
+				_growPoolFull = true;
 			}
 		}
-		public bool GrowPoolEmpty { get; private set; }
-		public bool GrowPoolFull{ get; private set; }
-		public bool ReservoirEmpty { get; private set; }
+
+		public bool GrowPoolEmpty
+		{
+			get { return _growPoolEmpty; }
+			set { _growPoolEmpty = value; }
+		}
+
+		public bool GrowPoolFull
+		{
+			get { return _growPoolFull; }
+			set { _growPoolFull = value; }
+		}
+
+		public bool ReservoirEmpty
+		{
+			get { return _reservoirEmpty; }
+			set { _reservoirEmpty = value; }
+		}
 	}
 }

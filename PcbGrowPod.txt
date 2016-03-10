@@ -21,22 +21,24 @@ Gnd
 
 Outputs from PCB
 -- Waterlevels --
-Reservoir
-GrowPodEmpty
-GrowPodFull
-Gnd GrowpodS
-Gnd reservoir
+Reservoir (A5)
+GrowPodEmpty (A4)
+GrowPodFull (A3)
+5v GrowpodS
+5v reservoir
 
 -- Relay --
-HeaterRelay
-PumpRelay
+HeaterRelay(D9)
+PumpRelay (D8)
 5v
 Gnd
 
 -- SHT10 --
-Data
-Clock
-5v
-Gnd
+Data (D0)   - Blue
+Clock (D1) - yellow
+5v   - red
+Gnd  - green
 
+Need to connect all waterlevels to a 10K to gnd
+Need to connect SHT10 Data with a 10K to 5v
 

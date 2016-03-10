@@ -36,8 +36,9 @@ namespace Http
 		public void SendPumpData(IGuadtimGardenData dataPackage)
 		{
 			var dataString = CreatePumpDataString(dataPackage);
-			
-			_httpSender.DoInitializeAndSend(dataString);
+
+			var urlPath = "/pump";
+			_httpSender.DoInitializeAndSend(dataString, urlPath);
 
 		}
 
@@ -51,7 +52,8 @@ namespace Http
 		public void SendHeaterData(IGuadtimGardenData dataPackage)
 		{
 			var dataString = CreateHeaterDataString(dataPackage);
-			_httpSender.DoInitializeAndSend(dataString);
+			var urlPath = "/heater";
+			_httpSender.DoInitializeAndSend(dataString,urlPath);
 		}
 
 		private string CreateHeaterDataString(IGuadtimGardenData dataPackage)
@@ -75,7 +77,8 @@ namespace Http
 		public void SendWaterlevelsData(IGuadtimGardenData dataPackage)
 		{
 			var dataString = CreateWaterlevelsDataString(dataPackage);
-			_httpSender.DoInitializeAndSend(dataString);
+			var urlPath = "/waterlevels";
+			_httpSender.DoInitializeAndSend(dataString, urlPath);
 		}
 
 		private string CreateWaterlevelsDataString(IGuadtimGardenData dataPackage)
@@ -90,7 +93,8 @@ namespace Http
 		public void SendTempAndHumidityData(IGuadtimGardenData dataPackage)
 		{
 			var dataString = CreateHumidityDataString(dataPackage);
-			_httpSender.DoInitializeAndSend(dataString);
+			var urlPath = "/tempandhumidity";
+			_httpSender.DoInitializeAndSend(dataString, urlPath);
 		}
 
 		private string CreateHumidityDataString(IGuadtimGardenData dataPackage)

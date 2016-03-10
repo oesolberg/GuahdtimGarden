@@ -19,7 +19,7 @@ namespace GuahdtimGarden
 	public class Program
 	{
 
-		private const string WebApiUrlKeiy = "WebApiUrl";
+		private const string WebApiUrlKey = "WebApiUrl";
 		private const string TokenKey = "GuahtdimBearerToken";
 
 
@@ -29,7 +29,7 @@ namespace GuahdtimGarden
 		private static SensirionSHT11 _tempAndHumiditySensor;
 		private static HttpDataDeliveryController _httpDataDeliverer;
 
-		private static  Relays.RelayController _relays;
+		private static Relays.RelayController _relays;
 		private static WaterLevel.WaterLevelSensor _waterLevelSensorController;
 
 		public static void Main()
@@ -61,7 +61,7 @@ namespace GuahdtimGarden
 		private static void SetupRelays()
 		{
 			Debug.Print("Setting up relays");
-			_relays=new Relays.RelayController();
+			_relays = new Relays.RelayController();
 			/* Function: An object with 2-3 methods
 			*		Heat-relay on
 			*		Heat-relay off
@@ -72,39 +72,44 @@ namespace GuahdtimGarden
 
 		private static void SetupTime()
 		{
-			var result=Ntp.Ntp.UpdateTimeFromNtpServer(numberOfRetries: 10);
-			Debug.Print("Timeupdate result: "+ result.ToString());
-			Debug.Print("DateTime after update: "+DateTime.Now.ToString(DateTimeFormatString));
+			var result = Ntp.Ntp.UpdateTimeFromNtpServer(numberOfRetries: 10);
+			Debug.Print("Timeupdate result: " + result.ToString());
+			Debug.Print("DateTime after update: " + DateTime.Now.ToString(DateTimeFormatString));
 		}
 
 		private static void SetupMicroSdDrive()
 		{
 			_sdCardController = new SDCard.SdCardController();
-			Debug.Print("DateTime in SD Card Controller: "+_sdCardController.GetTime().ToString(DateTimeFormatString));
+			Debug.Print("DateTime in SD Card Controller: " + _sdCardController.GetTime().ToString(DateTimeFormatString));
 			Debug.Print("SD Card initialized");
 		}
 
 		private static void SetupHumidityAndTemperatureSensor()
 		{
 			//Todo - handle errors and try to redo?
-			 var ioProvider = new SHT11_GPIO_IOProvider(Pins.GPIO_PIN_D0, Pins.GPIO_PIN_D1);
-			_tempAndHumiditySensor=new SensirionSHT11(ioProvider);
+			var ioProvider = new SHT11_GPIO_IOProvider(Pins.GPIO_PIN_D0, Pins.GPIO_PIN_D1);
+			_tempAndHumiditySensor = new SensirionSHT11(ioProvider);
 			_tempAndHumiditySensor.SoftReset();
 			_tempAndHumiditySensor.SetSensorToAccurate();
 		}
 
 		private static void SetupInternetDataSending()
 		{
-			var webApiUrl=GetWebApiUrlFromConfig();
-			var headerInfo=GetWebApiHeaderInfo();
-				  
-			_httpDataDeliverer = new Http.HttpDataDeliveryController(webApiUrl,headerInfo);
+
+			//var webApiUrl=GetWebApiUrlFromConfig();
+			//var headerInfo=GetWebApiHeaderInfo();
+			var webApiUrl = "http://guahtdimwebapi.azurewebsites.net";
+
+
+			var headerInfo = "69f248c8-0605-4bbb-95d0-4217bdd4858a";
+
+			_httpDataDeliverer = new Http.HttpDataDeliveryController(webApiUrl, headerInfo);
 		}
 
 		private static string GetWebApiUrlFromConfig()
 		{
 
-			var webUrl=ConfigReader.ConfigurationManager.GetAppSetting(WebApiUrlKeiy);
+			var webUrl = ConfigReader.ConfigurationManager.GetAppSetting(WebApiUrlKey);
 			return webUrl;
 		}
 
@@ -121,13 +126,14 @@ namespace GuahdtimGarden
 			{
 				var humidity = GetHumidity();
 				var temperature = GetTemperature();
-				
+				//var humidity = 20.0;
+				//var temperature = 20.0;
 
 				var waterLevelData = _waterLevelSensorController.GetWaterLevelStatus();
-				
+
 
 				var heaterStatus = _relays.GetHeaterStatus();
-				
+
 
 				var dataPackage = CreateNewDataPackage(humidity, temperature, waterLevelData, heaterStatus);
 
@@ -156,10 +162,10 @@ namespace GuahdtimGarden
 			if (temperature > 25)
 			{
 				_relays.Heater(HeaterStatus.Off);
-				_httpDataDeliverer.SendHeaterData( new GuadtimGardenData().AddHeaterOff());
-				
+				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOff());
+
 			}
-			if (temperature < 18)
+			if (temperature < 20)
 			{
 				_relays.Heater(HeaterStatus.On);
 				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOn());
@@ -182,13 +188,13 @@ namespace GuahdtimGarden
 						_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOff());
 
 					}
-					
+
 				}
 			}
 			else
 			{
 				//Send some message about the reservoir being empty
-				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().ReservoirEmpty());
+				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().ReservoirEmpty().GrowPodEmpty());
 			}
 		}
 
@@ -199,7 +205,7 @@ namespace GuahdtimGarden
 
 		private static void SleepForGivenSeconds(int numberOfSeconds)
 		{
-			Thread.Sleep(numberOfSeconds*1000);
+			Thread.Sleep(numberOfSeconds * 1000);
 		}
 
 		private static double GetHumidity()
@@ -209,7 +215,7 @@ namespace GuahdtimGarden
 			Debug.Print("Humidity in percent: " + humidity.ToString());
 			return humidity;
 		}
-		
+
 		private static double GetTemperature()
 		{
 			double temperature = _tempAndHumiditySensor.ReadTemperature(SensirionSHT11.SHT11VDD_Voltages.VDD_3_5V, SensirionSHT11.SHT11TemperatureUnits.Celcius);
@@ -217,12 +223,12 @@ namespace GuahdtimGarden
 			return temperature;
 		}
 
-		private static IGuadtimGardenData CreateNewDataPackage(double humidity, double temperature, WaterLevel.WaterLevelData waterLevelData, bool heaterStatus, bool pumpStatus=false)
+		private static IGuadtimGardenData CreateNewDataPackage(double humidity, double temperature, WaterLevel.WaterLevelData waterLevelData, bool heaterStatus, bool pumpStatus = false)
 		{
-			return new SDCard.GuadtimGardenData(pumpStatus, DateTime.Now,temperature,humidity, heaterStatus,waterLevelData.ReservoirEmpty,waterLevelData.GrowPoolEmpty,waterLevelData.GrowPoolFull);
+			return new SDCard.GuadtimGardenData(pumpStatus, DateTime.Now, temperature, humidity, heaterStatus, waterLevelData.ReservoirEmpty, waterLevelData.GrowPoolEmpty, waterLevelData.GrowPoolFull);
 		}
 
-	
+
 
 	}
 }

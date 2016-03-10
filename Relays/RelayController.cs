@@ -15,35 +15,35 @@ namespace Relays
 		public RelayController()
 		{
 			//Set default pins
-			_heaterRelay = new OutputPort(Pins.GPIO_PIN_D9, false);
-			_pumpRelay = new OutputPort(Pins.GPIO_PIN_D8, false);
+			_heaterRelay = new OutputPort(Pins.GPIO_PIN_D9, true);
+			_pumpRelay = new OutputPort(Pins.GPIO_PIN_D8, true);
 		}
 
 		public RelayController(Cpu.Pin heaterRelayPin, Cpu.Pin pumpRelayPin)
 		{
 			//Set default pins
-			_heaterRelay = new OutputPort(heaterRelayPin, false);
-			_pumpRelay = new OutputPort(pumpRelayPin, false);
+			_heaterRelay = new OutputPort(heaterRelayPin, true);
+			_pumpRelay = new OutputPort(pumpRelayPin, true);
 		}
 
 		public void Heater(HeaterStatus heaterStatusStatus)
 		{
 			if(heaterStatusStatus==HeaterStatus.On)
-				_heaterRelay.Write(true);
-			if(heaterStatusStatus==HeaterStatus.Off)
 				_heaterRelay.Write(false);
+			if(heaterStatusStatus==HeaterStatus.Off)
+				_heaterRelay.Write(true);
 		}
 
 		public void RunPump(int millisecondsToRun)
 		{
-			_pumpRelay.Write(true);
-			Thread.Sleep(millisecondsToRun);
 			_pumpRelay.Write(false);
+			Thread.Sleep(millisecondsToRun);
+			_pumpRelay.Write(true);
 		}
 
 		public bool GetHeaterStatus()
 		{
-			return _heaterRelay.Read();
+			return !(_heaterRelay.Read());
 		}
 	}
 }

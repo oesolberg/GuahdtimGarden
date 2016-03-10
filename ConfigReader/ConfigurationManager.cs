@@ -10,7 +10,7 @@ namespace ConfigReader
 	public static class ConfigurationManager
 	{
 
-		private const string AppSettingsFilePath = "Appsettings.secret.config";
+		private const string AppSettingsFilePath = @"\SD\Appsettings.secret.config";
 
 		private const string APPSETTINGS_SECTION = "appSettings";
 		private const string ADD = "add";
@@ -26,7 +26,19 @@ namespace ConfigReader
 
 		public static string GetAppSetting(string key)
 		{
+			if (_appSettings.Count == 0)
+			{
+				LoadConfigFile();
+			}
 			return GetAppSetting(key, null);
+		}
+
+		private static void LoadConfigFile()
+		{
+			using (Stream stream = new FileStream(AppSettingsFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+			{
+				ConfigurationManager.Load(stream);
+			}
 		}
 
 		public static string GetAppSetting(string key, string defaultValue)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using Microsoft.SPOT.Net.Security;
 using System.Reflection;
 using System.Text;
 using Microsoft.SPOT;
@@ -11,7 +12,7 @@ namespace Http
 	public class HttpSender
 	{
 		private readonly string _headerToken;
-			//"http://requestb.in/1agwmmz1"n;
+			// "http://requestb.in/1agwmmz1"n;
 		private readonly string _webapiUrl;
 
 		public HttpSender(string webapiUrl, string headerToken)
@@ -48,17 +49,21 @@ namespace Http
 
 		}
 
-		public void SendRequest(string dataString)
-		{
-			HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(_webapiUrl);
 
+
+		public void SendRequest(string dataString, string endingUrlPath)
+		{
+				
+
+			HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(_webapiUrl+endingUrlPath+"?"+dataString);
+			webReq.HttpsAuthentCerts = null; 
 			UTF8Encoding enc = new UTF8Encoding();
 			byte[] data = UTF8Encoding.UTF8.GetBytes(dataString);
 			var guahtdimBearer = GetGuahtdimBearerString();
 
-			webReq.Headers.Add("Authentication", guahtdimBearer);
+			webReq.Headers.Add("Authorization", guahtdimBearer);
 			webReq.Method = "POST";
-			webReq.ContentType = "application/json";
+			//webReq.ContentType = "multipart/form-data";// "application/json";
 			webReq.ContentLength = data.Length;
 			webReq.Timeout = 10000;
 			Stream dataStream = null;
@@ -98,10 +103,10 @@ namespace Http
 			return "GuahtdimBearer " + _headerToken;// "69f248c8-0605-4bbb-95d0-4217bdd4858a";
 		}
 
-		public void DoInitializeAndSend(string dataString)
+		public void DoInitializeAndSend(string dataString,string endingUrlPath)
 		{
 			InitializeNetwork();
-			SendRequest(dataString);
+			SendRequest(dataString, endingUrlPath);
 		}
 	}
 }
