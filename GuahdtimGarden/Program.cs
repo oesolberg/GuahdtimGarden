@@ -194,7 +194,7 @@ namespace GuahdtimGarden
 			else
 			{
 				//Send some message about the reservoir being empty
-				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().ReservoirEmpty().GrowPodEmpty());
+				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().ReservoirEmpty().GrowPodEmpty().GrowPodNotFull());
 			}
 		}
 

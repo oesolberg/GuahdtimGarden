@@ -12,38 +12,44 @@ namespace Relays
 		private readonly OutputPort _heaterRelay;
 		private readonly OutputPort _pumpRelay;
 
+		private readonly bool SetRelayLogicOn = false;
+		private readonly bool SetRelayLogicOff = true;
+
 		public RelayController()
 		{
 			//Set default pins
-			_heaterRelay = new OutputPort(Pins.GPIO_PIN_D9, true);
-			_pumpRelay = new OutputPort(Pins.GPIO_PIN_D8, true);
+			_heaterRelay = new OutputPort(Pins.GPIO_PIN_D9,SetRelayLogicOff);
+			_pumpRelay = new OutputPort(Pins.GPIO_PIN_D8, SetRelayLogicOff);
 		}
 
 		public RelayController(Cpu.Pin heaterRelayPin, Cpu.Pin pumpRelayPin)
 		{
 			//Set default pins
-			_heaterRelay = new OutputPort(heaterRelayPin, true);
-			_pumpRelay = new OutputPort(pumpRelayPin, true);
+			_heaterRelay = new OutputPort(heaterRelayPin, SetRelayLogicOff);
+			_pumpRelay = new OutputPort(pumpRelayPin, SetRelayLogicOff);
 		}
 
 		public void Heater(HeaterStatus heaterStatusStatus)
 		{
 			if(heaterStatusStatus==HeaterStatus.On)
-				_heaterRelay.Write(false);
+				_heaterRelay.Write(SetRelayLogicOn);
 			if(heaterStatusStatus==HeaterStatus.Off)
-				_heaterRelay.Write(true);
+				_heaterRelay.Write(SetRelayLogicOff);
 		}
 
 		public void RunPump(int millisecondsToRun)
 		{
-			_pumpRelay.Write(false);
+			_pumpRelay.Write(SetRelayLogicOn);
 			Thread.Sleep(millisecondsToRun);
-			_pumpRelay.Write(true);
+			_pumpRelay.Write(SetRelayLogicOff);
 		}
 
 		public bool GetHeaterStatus()
 		{
-			return !(_heaterRelay.Read());
+			var heaterRelayStatus=_heaterRelay.Read();
+			if (heaterRelayStatus == SetRelayLogicOff)
+				return false;
+			return true;
 		}
 	}
 }

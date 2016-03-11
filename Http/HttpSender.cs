@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Microsoft.SPOT.Net.Security;
+
 using System.Reflection;
 using System.Text;
 using Microsoft.SPOT;
