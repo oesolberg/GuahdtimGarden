@@ -117,7 +117,7 @@ namespace SDCard
 
 		void SignalWrittenFile()
 		{
-			for (int i = 0; i < 2; i++)
+			for (int i = 0; i < 1; i++)
 			{
 				_confirm.Write(true);
 				Thread.Sleep(50);

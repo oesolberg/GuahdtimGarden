@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-
-using System.Reflection;
 using System.Text;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Net.NetworkInformation;
+
+
+
 
 namespace Http
 {
@@ -53,9 +54,9 @@ namespace Http
 
 		public void SendRequest(string dataString, string endingUrlPath)
 		{
-				
 
-			HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(_webapiUrl+endingUrlPath+"?"+dataString);
+
+			HttpWebRequest webReq = (HttpWebRequest) WebRequest.Create(_webapiUrl + endingUrlPath);//+"?"+dataString);
 			webReq.HttpsAuthentCerts = null; 
 			UTF8Encoding enc = new UTF8Encoding();
 			byte[] data = UTF8Encoding.UTF8.GetBytes(dataString);
@@ -64,6 +65,7 @@ namespace Http
 			webReq.Headers.Add("Authorization", guahtdimBearer);
 			webReq.Method = "POST";
 			//webReq.ContentType = "multipart/form-data";// "application/json";
+			webReq.ContentType = "application/x-www-form-urlencoded";
 			webReq.ContentLength = data.Length;
 			webReq.Timeout = 10000;
 			Stream dataStream = null;
@@ -73,18 +75,20 @@ namespace Http
 				dataStream = webReq.GetRequestStream();
 
 				dataStream.Write(data, 0, data.Length);
-				dataStream.Close();
+				dataStream.Flush();
 
-				response = webReq.GetResponse();
+				//response = webReq.GetResponse();
 
+				HttpWebResponse response2 = (HttpWebResponse) webReq.GetResponse();
+				Debug.Print(response2.StatusDescription);
 				//HttpWebResponse resp = (HttpWebResponse)webReq.GetResponse();
 
-				Debug.Print(((HttpWebResponse)response).StatusDescription);
+				//Debug.Print(((HttpWebResponse)response).StatusDescription);
 
 			}
 			catch (Exception ex)
 			{
-
+				//SignalError();
 				Debug.Print(ex.Message);
 
 			}
@@ -108,5 +112,23 @@ namespace Http
 			InitializeNetwork();
 			SendRequest(dataString, endingUrlPath);
 		}
+
+		//private void SignalError()
+		//{
+		//	for (int i = 0; i < 4; i++)
+		//	{
+		//		_confirm.Write(true);
+		//		Thread.Sleep(70);
+		//		_confirm.Write(false);
+		//		Thread.Sleep(70);
+
+		//		_confirm.Write(true);
+		//		Thread.Sleep(70);
+		//		_confirm.Write(false);
+		//		Thread.Sleep(70);
+		//	}
+		//}
+
+		
 	}
 }

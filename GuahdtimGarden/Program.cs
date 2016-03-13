@@ -22,6 +22,10 @@ namespace GuahdtimGarden
 		private const string WebApiUrlKey = "WebApiUrl";
 		private const string TokenKey = "GuahtdimBearerToken";
 
+		private const int NumberOfSecondsToSleep = 180;
+		private const double MinimumTemperature = 23;
+		private const double MaxTemperature = 28.5;
+
 
 		private const string DateTimeFormatString = "yyyy-MM-dd HH:mm:ss";
 
@@ -149,7 +153,7 @@ namespace GuahdtimGarden
 
 
 
-				SleepForGivenSeconds(30);
+				SleepForGivenSeconds(NumberOfSecondsToSleep);
 				//numberOfRuns--;
 			} while (true);
 			//}while(numberOfRuns>0);
@@ -159,13 +163,13 @@ namespace GuahdtimGarden
 
 		private static void DoLogicBasedOnTemperature(double temperature)
 		{
-			if (temperature > 25)
+			if (temperature > MaxTemperature)
 			{
 				_relays.Heater(HeaterStatus.Off);
 				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOff());
 
 			}
-			if (temperature < 20)
+			if (temperature < MinimumTemperature)
 			{
 				_relays.Heater(HeaterStatus.On);
 				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOn());
@@ -180,21 +184,25 @@ namespace GuahdtimGarden
 			{
 				if (waterLevelData.GrowPoolEmpty)
 				{
+					_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOn());
 					while (!waterLevelData.ReservoirEmpty && !waterLevelData.GrowPoolFull)
 					{
-						_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOn());
-						_relays.RunPump(1000);
+
+						_relays.RunPump(1500);
 						//Send some message about pumping for a second?
-						_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOff());
+						waterLevelData = _waterLevelSensorController.GetWaterLevelStatus();
+
 
 					}
+					_httpDataDeliverer.SendPumpData(new GuadtimGardenData().PumpOff());
+					_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().SetWaterLevelData(waterLevelData));
 
 				}
 			}
 			else
 			{
 				//Send some message about the reservoir being empty
-				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().ReservoirEmpty().GrowPodEmpty().GrowPodNotFull());
+				_httpDataDeliverer.SendWaterlevelsData(new GuadtimGardenData().SetWaterLevelData(waterLevelData));
 			}
 		}
 

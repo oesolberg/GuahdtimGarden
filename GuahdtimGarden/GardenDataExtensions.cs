@@ -1,6 +1,7 @@
 ﻿using System;
 using CommonInterfaces;
 using SDCard;
+using WaterLevel;
 
 namespace GuahdtimGarden
 {
@@ -45,6 +46,12 @@ namespace GuahdtimGarden
 		public static IGuadtimGardenData GrowPodFull(this IGuadtimGardenData gardenData)
 		{
 			gardenData = new GuadtimGardenData(gardenData.PumpOn, DateTime.Now, gardenData.Temperature, gardenData.Humidity, gardenData.HeaterOn, gardenData.ReservoirEmpty, gardenData.GrowPodEmpty, true);
+			return gardenData;
+		}
+
+		public static IGuadtimGardenData SetWaterLevelData(this IGuadtimGardenData gardenData,WaterLevelData waterLevelData)
+		{
+			gardenData = new GuadtimGardenData(gardenData.PumpOn, DateTime.Now, gardenData.Temperature, gardenData.Humidity, gardenData.HeaterOn, waterLevelData.ReservoirEmpty, waterLevelData.GrowPoolEmpty, waterLevelData.GrowPoolFull);
 			return gardenData;
 		}
 
