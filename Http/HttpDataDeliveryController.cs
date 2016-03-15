@@ -59,7 +59,7 @@ namespace Http
 		private string CreateHeaterDataString(IGuadtimGardenData dataPackage)
 		{
 			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
-			dataString += "&HeaterOn=" + dataPackage.HeaterOn;
+			dataString += "&HeatOn=" + dataPackage.HeaterOn;
 			return dataString;
 		}
 		//private string CreateDataString(IGuadtimGardenData dataPackage)

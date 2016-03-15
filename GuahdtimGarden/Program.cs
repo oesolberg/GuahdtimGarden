@@ -145,7 +145,7 @@ namespace GuahdtimGarden
 
 				_httpDataDeliverer.SendDataToWeb(dataPackage);
 
-				DoLogicBasedOnTemperature(temperature);
+				DoLogicBasedOnTemperature(temperature,heaterStatus);
 
 				DoLogicBasedOnWaterLevels(waterLevelData);
 
@@ -161,15 +161,15 @@ namespace GuahdtimGarden
 
 		}
 
-		private static void DoLogicBasedOnTemperature(double temperature)
+		private static void DoLogicBasedOnTemperature(double temperature,bool heatOn)
 		{
-			if (temperature > MaxTemperature)
+			if (temperature > MaxTemperature && heatOn)
 			{
 				_relays.Heater(HeaterStatus.Off);
 				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOff());
 
 			}
-			if (temperature < MinimumTemperature)
+			if (temperature < MinimumTemperature && !heatOn)
 			{
 				_relays.Heater(HeaterStatus.On);
 				_httpDataDeliverer.SendHeaterData(new GuadtimGardenData().AddHeaterOn());
