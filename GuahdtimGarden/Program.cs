@@ -22,7 +22,7 @@ namespace GuahdtimGarden
 		private const string WebApiUrlKey = "WebApiUrl";
 		private const string TokenKey = "GuahtdimBearerToken";
 
-		private const int NumberOfSecondsToSleep = 180;
+		private const int NumberOfSecondsToSleep = 600;
 		private const double MinimumTemperature = 23;
 		private const double MaxTemperature = 28.5;
 
