@@ -8,14 +8,14 @@ namespace CommonInterfaces
 		DateTime CreatedDateTime { get; }
 		double Temperature { get; }
 		double Humidity { get; }
-		bool HeaterOn{ get; }
+		bool HeaterIsOn{ get; }
 
-		bool GrowPodFull { get; }
-		bool GrowPodEmpty { get; }
-		bool ReservoirEmpty { get; }
+		bool GrowPodIsFull { get; }
+		bool GrowPodIsEmpty { get; }
+		bool ReservoirIsEmpty { get; }
 
 		string CreateDataLine();
 
-
+	    void UpdateWaterLevelData(IWaterLevelData waterLevelData);
 	}
 }

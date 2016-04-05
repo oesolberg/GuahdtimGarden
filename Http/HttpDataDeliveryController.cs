@@ -59,7 +59,7 @@ namespace Http
 		private string CreateHeaterDataString(IGuadtimGardenData dataPackage)
 		{
 			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
-			dataString += "&HeatOn=" + dataPackage.HeaterOn;
+			dataString += "&HeatOn=" + dataPackage.HeaterIsOn;
 			return dataString;
 		}
 		//private string CreateDataString(IGuadtimGardenData dataPackage)
@@ -68,7 +68,7 @@ namespace Http
 		//	var humidity = dataPackage.Humidity;
 		//	dataString += "&humidity=" + humidity.ToString("f");
 		//	dataString += "&temperature=" + dataPackage.Temperature.ToString("f");
-		//	dataString += "&IsWarming=" + dataPackage.HeaterOn.ToString();
+		//	dataString += "&IsWarming=" + dataPackage.HeaterIsOn.ToString();
 		//	dataString += "&IsWatering=" + dataPackage.PumpOn.ToString();
 
 		//	return dataString;
@@ -84,9 +84,9 @@ namespace Http
 		private string CreateWaterlevelsDataString(IGuadtimGardenData dataPackage)
 		{
 			var dataString = "CreatedDateTime=" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
-			dataString += "&ReservoirEmpty=" + dataPackage.ReservoirEmpty;
-			dataString += "&GrowPodEmpty=" + dataPackage.GrowPodEmpty;
-			dataString += "&GrowPodFull=" + dataPackage.GrowPodFull;
+			dataString += "&ReservoirIsEmpty=" + dataPackage.ReservoirIsEmpty;
+			dataString += "&GrowPodIsEmpty=" + dataPackage.GrowPodIsEmpty;
+			dataString += "&GrowPodIsFull=" + dataPackage.GrowPodIsFull;
 			return dataString;
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using CommonInterfaces;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using SecretLabs.NETMF.Hardware;
@@ -30,7 +31,7 @@ namespace WaterLevel
 		}
 
 		//Read the waterlevel and return a WaterLevelDataStruct
-		public WaterLevelData GetWaterLevelStatus()
+		public IWaterLevelData GetWaterLevelStatus()
 		{
 			var reservoirValue = _reservoirSensorEmpty.Read();
 			var growpoolSensorEmptyValue = _growpoolSensorEmpty.Read();
@@ -47,8 +48,8 @@ namespace WaterLevel
 		}
 	}
 
-	public class WaterLevelData
-	{
+	public class WaterLevelData : IWaterLevelData
+    {
 		private bool _growPoolEmpty;
 		private bool _growPoolFull;
 		private bool _reservoirEmpty;

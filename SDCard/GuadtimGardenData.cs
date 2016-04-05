@@ -11,10 +11,10 @@ namespace SDCard
 
 		
 		private readonly DateTime _createdDateTime;
-		private readonly bool _heatOn;
-		private readonly bool _reservoirEmpty;
-		private readonly bool _growPodEmpty;
-		private readonly bool _growPodFull;
+		private readonly bool _heatIsOn;
+		private readonly bool _reservoirIsEmpty;
+		private readonly bool _growPodIsEmpty;
+		private readonly bool _growPodIsFull;
 		private readonly double _humidity;
 		private readonly double _temperature;
 		private readonly bool _pumpOn;
@@ -24,14 +24,14 @@ namespace SDCard
 			
 		}
 
-		public GuadtimGardenData(bool pumpOn, DateTime createdDateTime, double temperature, double humidity, bool heatOn, bool reservoirEmpty,bool growPodEmpty, bool growPodFull)
+		public GuadtimGardenData(bool pumpOn, DateTime createdDateTime, double temperature, double humidity, bool heatIsOn, bool reservoirIsEmpty,bool growPodIsEmpty, bool growPodIsFull)
 		{
 			_pumpOn = pumpOn;
 			_createdDateTime = createdDateTime;
-			_heatOn= heatOn;
-			_reservoirEmpty = reservoirEmpty;
-			_growPodEmpty = growPodEmpty;
-			_growPodFull = growPodFull;
+			_heatIsOn= heatIsOn;
+			_reservoirIsEmpty = reservoirIsEmpty;
+			_growPodIsEmpty = growPodIsEmpty;
+			_growPodIsFull = growPodIsFull;
 			_humidity = humidity;
 			_temperature = temperature;
 		}
@@ -46,10 +46,10 @@ namespace SDCard
 		public DateTime CreatedDateTime { get { return _createdDateTime; } }
 		public double Temperature { get { return _temperature; } }
 		public double Humidity { get { return _humidity; } }
-		public bool GrowPodFull { get {return _growPodFull;} }
-		public bool GrowPodEmpty { get {return _growPodEmpty;} }
-		public bool ReservoirEmpty { get {return _reservoirEmpty;} }
-		public bool HeaterOn { get { return _heatOn; } }
+		public bool GrowPodIsFull { get {return _growPodIsFull;} }
+		public bool GrowPodIsEmpty { get {return _growPodIsEmpty;} }
+		public bool ReservoirIsEmpty { get {return _reservoirIsEmpty;} }
+		public bool HeaterIsOn { get { return _heatIsOn; } }
 		public string CreateDataLine()
 		{
 			double truncatedTemperature = System.Math.Truncate(_temperature * 100) / 100;
@@ -58,13 +58,16 @@ namespace SDCard
 			return _createdDateTime.ToString(DateTimeFormatString) + ", " +
 			       truncatedTemperature.ToString(DoubleFormatString) + ", " +
 			       truncatedHumidity.ToString(DoubleFormatString) + ", " +
-			       HeaterOn + ", " +
+			       HeaterIsOn + ", " +
 			       PumpOn + ", " +
-				   ReservoirEmpty + ", " +
-				   GrowPodEmpty + ", " +
-				   GrowPodFull ;
+				   ReservoirIsEmpty + ", " +
+				   GrowPodIsEmpty + ", " +
+				   GrowPodIsFull ;
 		}
 
-		
+	    public void UpdateWaterLevelData(IWaterLevelData waterLevelData)
+	    {
+	        throw new NotImplementedException();
+	    }
 	}
 }
